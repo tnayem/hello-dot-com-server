@@ -24,7 +24,13 @@ async function run(){
             const result = await productCatagoryCollection.find(query).toArray()
             res.send(result)
         })
-        // Get samsung phone data
+        //Post phone info From Clint Side
+        app.post('/phones',async (req,res)=>{
+            const phoneInfo = req.body
+            const result = await allPhoneCollection.insertOne(phoneInfo)
+            res.send(result)
+        })
+        // Get phone data
         app.get('/phones', async (req,res)=>{
             const brand = req.query.brand
             const query ={brand:brand}
