@@ -53,6 +53,13 @@ async function run(){
             const result = await advertisedPhoneColection.insertOne(advertisedPhone)
             res.send(result)
         })
+        // Get advertice data from database
+        app.get('/advertised', async (req,res)=>{
+            const query = {}
+            const result = await advertisedPhoneColection.find(query).toArray()
+            res.send(result)
+
+        })
         
         
     }
