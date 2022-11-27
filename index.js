@@ -18,6 +18,7 @@ async function run(){
     try{
         const productCatagoryCollection = client.db('helloDotCom').collection('productsCatagory')
         const allPhoneCollection = client.db('helloDotCom').collection('allPhone')
+        const advertisedPhoneColection = client.db('helloDotCom').collection('advertisedPhone')
         // Get Catagory
         app.get('/catagory', async (req,res)=>{
             const query = {}
@@ -30,7 +31,8 @@ async function run(){
             const result = await allPhoneCollection.insertOne(phoneInfo)
             res.send(result)
         })
-        // Get phone data
+        
+        // Get phone data with brand
         app.get('/phones', async (req,res)=>{
             const brand = req.query.brand
             const query ={brand:brand}
@@ -38,6 +40,21 @@ async function run(){
             res.send(result)
 
         })
+        // get phones data with email
+        app.get('/myPhones', async (req,res)=>{
+            const email = req.query.email
+            const query = {email:email}
+            const result = await allPhoneCollection.find(query).toArray()
+            res.send(result)
+        })
+        // Advertise data insert
+        app.post('/advertised', async (req,res)=>{
+            const advertisedPhone=req.body 
+            const result = await advertisedPhoneColection.insertOne(advertisedPhone)
+            res.send(result)
+        })
+        
+        
     }
     finally{
 
