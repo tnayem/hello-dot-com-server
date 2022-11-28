@@ -61,6 +61,12 @@ async function run(){
             res.send(result)
 
         })
+        // Booking data insert from clint side
+        app.post('/booking', async(req,res)=>{
+            const bookingPhone = req.body
+            const result = await bookingPhoneCollection.insertOne(bookingPhone)
+            res.send(result)
+        })
         
         
     }
