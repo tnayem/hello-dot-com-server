@@ -19,6 +19,7 @@ async function run(){
         const productCatagoryCollection = client.db('helloDotCom').collection('productsCatagory')
         const allPhoneCollection = client.db('helloDotCom').collection('allPhone')
         const advertisedPhoneColection = client.db('helloDotCom').collection('advertisedPhone')
+        const bookingPhoneCollection = client.db('helloDotCom').collection('bookingPhone')
         // Get Catagory
         app.get('/catagory', async (req,res)=>{
             const query = {}
