@@ -67,6 +67,13 @@ async function run(){
             const result = await bookingPhoneCollection.insertOne(bookingPhone)
             res.send(result)
         })
+        // Get Booking data from database
+        app.get('/booking', async (req,res)=>{
+            const email = req.query.email
+            const query = {email:email}
+            const result = await bookingPhoneCollection.find(query).toArray()
+            res.send(result)
+        })
         
         
     }
