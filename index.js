@@ -47,7 +47,7 @@ async function run(){
             const result = await allPhoneCollection.find(query).toArray()
             res.send(result)
         })
-        // Advertise data insert
+        // Advertise data insert from clint side
         app.post('/advertised', async (req,res)=>{
             const advertisedPhone=req.body 
             const result = await advertisedPhoneColection.insertOne(advertisedPhone)
