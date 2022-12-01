@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+var jwt = require('jsonwebtoken')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
@@ -11,7 +12,6 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nfm1t0q.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -20,6 +20,7 @@ async function run(){
         const allPhoneCollection = client.db('helloDotCom').collection('allPhone')
         const advertisedPhoneColection = client.db('helloDotCom').collection('advertisedPhone')
         const bookingPhoneCollection = client.db('helloDotCom').collection('bookingPhone')
+        const usersCollection=client.db('helloDotCom').collection('users')
         // Get Catagory
         app.get('/catagory', async (req,res)=>{
             const query = {}
@@ -81,7 +82,58 @@ async function run(){
             const result = await bookingPhoneCollection.deleteOne(query)
             res.send(result)
         })
+        // Save users from clint side and generate jwt
+        app.put('/user/:email', async(req,res)=>{
+            const email = req.params.email 
+            const user = req.body
+            const query = {email:email}
+            const options = {upsert:true}
+            const updateDoc = {
+                $set:user,
+            }
+            const result = await usersCollection.updateOne(query,updateDoc,options)
+            console.log(result);
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn:'1d',
+            })
+            console.log(token);
+            res.send({result,token})
+        })
         
+        //Get all users
+        app.get('/allUsers', async(req,res)=>{
+            const query = {}
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+        //Delate users
+        app.delete('/allUsers/:id', async(req,res)=>{
+            const id = req.params.id 
+            const query = {_id:ObjectId(id)}
+            const result = await usersCollection.deleteOne(query)
+            res.send(result)
+        })
+        //Check Admin
+        app.get('/admin/:email', async(req,res)=>{
+            const email = req.params.email 
+            const query ={email}
+            const result = await usersCollection.findOne(query)
+            res.send({isAdmin:result?.role === 'admin'})
+        })
+        //Check Seller
+        app.get('/seller/:email',async(req,res)=>{
+            const email = req.params.email 
+            const query ={email}
+            const result = await usersCollection.findOne(query)
+            res.send({isSeller:result?.role === 'seller'})
+        })
+        //Check Buyer
+        app.get('/buyer', async(req,res)=>{
+            const query = {}
+            const result = await usersCollection.find(query)
+            res.send({isBuyer:result?.role!=='admin' || result?.role!=='seller'})
+
+        })
         
     }
     finally{
